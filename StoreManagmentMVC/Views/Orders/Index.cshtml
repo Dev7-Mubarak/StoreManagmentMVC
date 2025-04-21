@@ -1,0 +1,247 @@
+﻿@model OrderPaganatedListVM
+
+<div class="card d-flex col-10 custom-content-wrapper">
+    <div class="d-flex justify-content-between align-items-center m-3">
+        <h4 class="mb-0">Order Management</h4>
+        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> New Order
+        </a>
+    </div>
+
+    <div class="card-body bg-white">
+        <!-- Filters -->
+        <form  method="get" class="mb-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="status" class="form-control form-control-sm">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in Model.OrderStatusVMs)
+                        {
+                            <option value="@status.Status" selected="@(status.Status == Model.StatusFilter)">
+                                @status.Status
+                            </option>
+                        }
+
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="customerId" class="form-control form-control-sm">
+                        <option value="">All Customers</option>
+                        @foreach (var customer in Model.AvailableCustomers)
+                        {
+                            <option value="@customer.Id" selected="@(customer.Id == Model.CustomerFilter)">
+                                @customer.FullName
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center">
+                    <label for="DateFrom" class="form-label me-2 mb-0">From:</label>
+                    <input type="date"
+                           name="dateFrom"
+                           id="DateFrom"
+                           class="form-control form-control-sm"
+                           value="@Model.DateFrom">
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center">
+                    <label for="dateTo" class="form-label me-2 mb-0">TO:</label>
+                    <input type="date"
+                           name="dateTo"
+                           id="dateTo"
+                           class="form-control form-control-sm"
+                           value="@Model.DateTo">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                </div>
+            </div>
+
+            <!-- Hidden fields for sorting and pagination -->
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+            <input type="hidden" asp-for="CurrentPage" value="1" />
+        </form>
+
+        <!-- Orders Table -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>
+                            <a href="@Url.Action("Index", new {
+                                page = 1,
+                                sort = "OrderId",
+                                sortDir = Model.SortColumn == "OrderId" && Model.SortDirection == "ASC" ? "DESC" : "ASC",
+                                status = Model.StatusFilter,
+                                customerId = Model.CustomerFilter,
+                                dateFrom = Model.DateFrom,
+                                dateTo = Model.DateTo
+                            })">
+                                Order Number
+                                @if (Model.SortColumn == "OrderId")
+                                {
+                                    <i class="fa fa-arrows-v"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new {
+                                page = 1,
+                                sort = "OrderDate",
+                                sortDir = Model.SortColumn == "OrderDate" && Model.SortDirection == "ASC" ? "DESC" : "ASC",
+                                status = Model.StatusFilter,
+                                customerId = Model.CustomerFilter,
+                                dateFrom = Model.DateFrom,
+                                dateTo = Model.DateTo
+                            })">
+                                Date
+                                @if (Model.SortColumn == "OrderDate")
+                                {
+                                    <i class="fa fa-arrows-v"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>Customer</th>
+                        <th>
+                            <a href="@Url.Action("Index", new {
+                                page = 1,
+                                sort = "TotalAmount",
+                                sortDir = Model.SortColumn == "TotalAmount" && Model.SortDirection == "ASC" ? "DESC" : "ASC",
+                                status = Model.StatusFilter,
+                                customerId = Model.CustomerFilter,
+                                dateFrom = Model.DateFrom,
+                                dateTo = Model.DateTo
+                            })">
+                                Amount
+                                @if (Model.SortColumn == "TotalAmount")
+                                {
+                                    <i class="fa fa-arrows-v"></i>
+                                }
+                            </a>
+                        </th>
+                        <th>Status</th>
+                        <th>Items</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.TotalAmount.ToString("C")</td>
+                            <td>
+                                <span class="badge @GetStatusBadgeClass(order.Status)">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>@order.ItemCount</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-inverse-warning btn-fw toggle-details"
+                                            data-order-id="@order.OrderId"
+                                            title="Toggle Details">
+                                        <i class="fa fa-arrow-circle-o-down" style="color: black"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="details-@order.OrderId" class="order-details" style="display: none;">
+                            <td colspan="7">
+                                <div class="text-center">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    Loading details...
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination pagination-sm justify-content-center mt-4">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new {
+                            page = i,
+                            sort = Model.SortColumn,
+                            sortDir = Model.SortDirection,
+                            status = Model.StatusFilter,
+                            customerId = Model.CustomerFilter,
+                            dateFrom = Model.DateFrom,
+                            dateTo = Model.DateTo
+                        })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "badge-warning",
+            "Processing" => "badge-info",
+            "Shipped" => "badge-primary",
+            "Completed" => "badge-success",
+            "Cancelled" => "badge-danger",
+            _ => "badge-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.toggle-details').click(function () {
+                var orderId = $(this).data('order-id');
+                var detailsRow = $('#details-' + orderId);
+
+                if (detailsRow.is(':visible')) {
+                    detailsRow.hide();
+                } else {
+                    // Only load if we haven't loaded before
+                    if (detailsRow.find('.details-content').length === 0) {
+                        loadOrderDetails(orderId, detailsRow);
+                    }
+                    detailsRow.show();
+                }
+            });
+
+            function loadOrderDetails(orderId, detailsRow) {
+                $.get('@Url.Action("GetOrderDetails")', { orderId: orderId }, function (data) {
+                    var html = '<div class="details-content p-3"><table class="table table-sm">' +
+                        '<thead><tr><th>Product</th><th>Quantity</th><th>Unit Price</th></tr></thead>' +
+                        '<tbody>';
+
+                    data.forEach(function (item) {
+                        html += '<tr>' +
+                            '<td>' + item.name + '</td>' +
+                            '<td>' + item.quantity + '</td>' +
+                            '<td>' + item.unitPrice.toFixed(2) + '</td>' +
+                            '</tr>';
+                    });
+
+                    html += '</tbody></table></div>';
+
+                    detailsRow.find('td').html(html);
+                }).fail(function () {
+                    detailsRow.find('td').html('<div class="alert alert-danger">Failed to load details</div>');
+                });
+            }
+        });
+    </script>
+}
