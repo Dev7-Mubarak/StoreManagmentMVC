@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StoreManagmentMVC.Models;
 using StoreManagmentMVC.ViewModels;
+using StoreManagmentMVC.ViewModels.DashboardMVs;
+using StoreManagmentMVC.ViewModels.OrderVMs;
+using StoreManagmentMVC.ViewModels.ProductVMs;
 
 namespace StoreManagmentMVC
 {
@@ -17,19 +20,26 @@ namespace StoreManagmentMVC
         public DbSet<Category> Categories { get; set; }
         public DbSet<Employee> Employees { get; set; }
 
-        public DbSet<Sale> DailySalesData { get; set; }
-        public DbSet<TopProductVM> TopProductVM { get; set; }
+        public DbSet<SalesSummary> DailySalesData { get; set; }
         public DbSet<OrderDetailVM> OrderDetailVMs { get; set; }
         public DbSet<OrderStatusVM> ActiveOrderStatuses { get; set; }
         public virtual DbSet<vw_CustomersWithOrders> vw_CustomersWithOrders { get; set; }
+        public virtual DbSet<vw_AllCategories> vw_AllCategories { get; set; }
+        public virtual DbSet<DashboardStats> EcommerceDashboardStats { get; set; }
+        public DbSet<TopSellingProductVM> TopSellingProducts { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Sale>().HasNoKey();
-            modelBuilder.Entity<TopProductVM>().HasNoKey();
+            modelBuilder.Entity<SalesSummary>().HasNoKey();
             modelBuilder.Entity<OrderDetailVM>().HasNoKey();
+            modelBuilder.Entity<TopSellingProductVM>().HasNoKey();
+
             modelBuilder.Entity<OrderVM>(entity =>
+            {
+                entity.HasNoKey();
+            });
+            modelBuilder.Entity<ProductVM>(entity =>
             {
                 entity.HasNoKey();
             });
@@ -43,6 +53,17 @@ namespace StoreManagmentMVC
             {
                 entity.HasNoKey();
                 entity.ToView("vw_CustomersWithOrders");
+            });
+            modelBuilder.Entity<vw_AllCategories>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_AllCategories");
+            });
+
+            modelBuilder.Entity<DashboardStats>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_EcommerceDashboardStats");
             });
 
         }

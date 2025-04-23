@@ -1,4 +1,5 @@
-﻿@model DashboardVM
+﻿@using StoreManagmentMVC.ViewModels.DashboardMVs
+@model DashboardVM
 
 @{
     ViewData["Title"] = "Home Page";
@@ -15,34 +16,34 @@
                                 <div class="col-sm-12">
                                     <div class="statistics-details d-flex align-items-center justify-content-between">
                                         <div>
-                                            <p class="statistics-title">Orders Number</p>
-                                            <h3 class="rate-percentage">7,682</h3>
-                                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
+                                            <p class="statistics-title">Total Earnings This Month</p>
+                                            <h3 class="rate-percentage">@Model.EarningsThisMonth.ToString("C")</h3>
+                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Time</span></p>
                                         </div>
                                         <div>
-                                            <p class="statistics-title">Products Number</p>
-                                            <h3 class="rate-percentage">2,682</h3>
-                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                                            <p class="statistics-title">Orders This Month</p>
+                                            <h3 class="rate-percentage">@Model.OrdersThisMonth</h3>
+                                             <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Time</span></p>
+                                        </div>
+                                        <div class="d-none d-md-block">
+                                            <p class="statistics-title">Average Order Value</p>
+                                            <h3 class="rate-percentage">@Model.AverageOrderValue.ToString("C")</h3>
+                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Orders</span></p>
                                         </div>
                                         <div>
-                                            <p class="statistics-title">Customers Number</p>
-                                            <h3 class="rate-percentage">1,123</h3>
-                                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
+                                            <p class="statistics-title">Total Products</p>
+                                            <h3 class="rate-percentage">@Model.TotalProducts</h3>
+                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Time</span></p>
                                         </div>
                                         <div class="d-none d-md-block">
-                                            <p class="statistics-title">Avg. Time on Site</p>
-                                            <h3 class="rate-percentage">2m:35s</h3>
-                                            <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
+                                            <p class="statistics-title">Total Customers</p>
+                                            <h3 class="rate-percentage">@Model.TotalCustomers</h3>
+                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Time</span></p>
                                         </div>
                                         <div class="d-none d-md-block">
-                                            <p class="statistics-title">New Sessions</p>
-                                            <h3 class="rate-percentage">68.8</h3>
-                                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
-                                        </div>
-                                        <div class="d-none d-md-block">
-                                            <p class="statistics-title">Avg. Time on Site</p>
-                                            <h3 class="rate-percentage">2m:35s</h3>
-                                            <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
+                                            <p class="statistics-title">Total Orders</p>
+                                            <h3 class="rate-percentage">@Model.TotalOrders</h3>
+                                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>All Time</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -105,10 +106,10 @@
                                                                         <li class="d-block">
                                                                             <div class="form-check w-100">
                                                                                 <label class="form-check-label">
-                                                                                    <input class="checkbox" type="checkbox"> @product.ProductName <i class="input-helper rounded"></i>
+                                                                                    <input class="checkbox" type="checkbox"> @product.Name <i class="input-helper rounded"></i>
                                                                                 </label>
                                                                                 <div class="d-flex justify-content-between mt-2">
-                                                                                    <div class="ps-4 text-small me-3">Total Sales: @product.TotalQuantitySold</div>
+                                                                                    <div class="ps-4 text-small me-3">Total Sales: @product.TotalSold</div>
                                                                                     @{
                                                                                         string badgeClass = product.CategoryName switch
                                                                                         {

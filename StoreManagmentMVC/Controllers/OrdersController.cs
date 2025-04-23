@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using StoreManagmentMVC.Models;
-using StoreManagmentMVC.ViewModels;
+using StoreManagmentMVC.ViewModels.OrderVMs;
 using System.Data;
 
 namespace StoreManagmentMVC.Controllers
@@ -43,6 +43,7 @@ namespace StoreManagmentMVC.Controllers
             new SqlParameter("@DateFrom", parsedDateFrom.HasValue ? (object)parsedDateFrom.Value : DBNull.Value),
             new SqlParameter("@DateTo", parsedDateTo.HasValue ? (object)parsedDateTo.Value : DBNull.Value)
         };
+
 
             // Execute stored procedure with multiple result sets
             var connection = _context.Database.GetDbConnection();

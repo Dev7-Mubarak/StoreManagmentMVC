@@ -1,10 +1,11 @@
-﻿@model OrderPaganatedListVM
+﻿@using StoreManagmentMVC.ViewModels.OrderVMs
+@model OrderPaganatedListVM
 
 <div class="card d-flex col-10 custom-content-wrapper">
     <div class="d-flex justify-content-between align-items-center m-3">
-        <h4 class="mb-0">Order Management</h4>
-        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus"></i> New Order
+        <h2 class="mb-0">Orders Management</h2>
+        <a href="#" class="btn btn-primary btn">
+            New Order
         </a>
     </div>
 
@@ -26,7 +27,7 @@
                 </div>
                 <div class="col-md-3">
                     <select name="customerId" class="form-control form-control-sm">
-                        <option value="">All Customers</option>
+                        <option value="">All Customers <i class="fa fa-arrows-v"></i></option>
                         @foreach (var customer in Model.AvailableCustomers)
                         {
                             <option value="@customer.Id" selected="@(customer.Id == Model.CustomerFilter)">
@@ -55,7 +56,7 @@
                            value="@Model.DateTo">
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                    <button type="submit" class="btn btn-success w-100">Apply</button>
                 </div>
             </div>
 
@@ -194,7 +195,7 @@
         return status switch
         {
             "Pending" => "badge-warning",
-            "Processing" => "badge-info",
+            "Processing" => "badge-primary",
             "Shipped" => "badge-primary",
             "Completed" => "badge-success",
             "Cancelled" => "badge-danger",

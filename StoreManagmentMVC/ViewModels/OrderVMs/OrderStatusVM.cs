@@ -1,4 +1,4 @@
-﻿namespace StoreManagmentMVC.ViewModels
+﻿namespace StoreManagmentMVC.ViewModels.OrderVMs
 {
     public class OrderStatusVM
     {

@@ -2,14 +2,16 @@
 @model CreateProductVM
 
 @{
-    ViewData["Title"] = "Create Product";
+    ViewData["Title"] = "Edit Product";
 }
 
 <div class="col-md-8 offset-md-2 mt-4">
-    <h3>Create New Product</h3>
+    <h3>Edit Product</h3>
 
-    <form asp-action="Create" method="post">
+    <form asp-action="Edit" method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
+
+        <input type="hidden" asp-for="ProductId" />
 
         <div class="form-group">
             <label asp-for="Name"></label>
@@ -41,7 +43,12 @@
             <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-success">Create</button>
+        <div class="form-group form-check">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label"></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
 

@@ -1,47 +1,106 @@
-﻿
-<a type="button" class="btn btn-success" asp-controller="Products" asp-action="Create">Add Product</a>
+﻿@using StoreManagmentMVC.ViewModels.ProductVMs
+@model ProductPaganatedListVM
 
-@* @model IEnumerable<Product>
+<div class="card d-flex col-10 custom-content-wrapper">
+    <div class="d-flex justify-content-between align-items-center m-3">
+        <h2 class="mb-0">Products Management</h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+             New Product
+        </a>
+    </div>
 
-<div class="col-lg-11 grid-margin stretch-card">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Products</h4>
-
-            <p class="card-description">
-                <a type="button" class="btn btn-success" asp-controller="Products" asp-action="Create">Add Product</a>
-            </p>
-
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Description</th>
-                            <th>Price</th>
-                            <th>Stock Quantity</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Model)
+    <div class="card-body bg-white">
+        <!-- Filters -->
+        <form method="get" class="mb-3">
+            <div class="row">
+                <div class="col-md-5">
+                    <input type="text" name="SearchTerm" class="form-control form-control-sm" placeholder="Search by name" value="@Model.SearchTerm" />
+                </div>
+                <div class="col-md-5">
+                    <select name="categoryId" class="form-control form-control-sm">
+                        <option value="">All Categories</option>
+                        @foreach (var cat in Model.AvailableCategories)
                         {
-                            <tr>
-                                <td>@product.Name</td>
-                                <td>@product.Description</td>
-                                <td>@product.Price</td>
-                                <td>@product.StockQuantity</td>
-                                <td>
-                                    <label class="badge @(product.IsActive ? "badge-success" : "badge-danger")">
-                                        @(product.IsActive ? "Active" : "Inactive")
-                                    </label>
-                                </td>
-                            </tr>
+                            <option value="@cat.CategoryId" selected="@(cat.CategoryId == Model.CategoryFilter)">
+                                @cat.Name
+                            </option>
                         }
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success w-100">Apply</button>
+                </div>
             </div>
+
+            <!-- Hidden fields for sorting and pagination -->
+            <input type="hidden" asp-for="SortColumn" />
+            <input type="hidden" asp-for="SortDirection" />
+            <input type="hidden" asp-for="CurrentPage" value="1" />
+        </form>
+
+        <!-- Products Table -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>
+                            <a href="@Url.Action("Index", new {
+                                page = 1,
+                                sort = "ProductId",
+                                sortDir = Model.SortColumn == "ProductId" && Model.SortDirection == "ASC" ? "DESC" : "ASC",
+                                categoryId = Model.CategoryFilter
+                            })">ID</a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", new {
+                                page = 1,
+                                sort = "ProductName",
+                                sortDir = Model.SortColumn == "ProductName" && Model.SortDirection == "ASC" ? "DESC" : "ASC",
+                                categoryId = Model.CategoryFilter
+                            })">Product Name</a>
+                        </th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td>@product.ProductId</td>
+                            <td>@product.Name</td>
+                            <td>@product.CategoryName</td>
+                            <td>@product.Price.ToString("C")</td>
+                            <td>@product.StockQuantity</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="@Url.Action("Edit", new { id = product.ProductId })" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="@Url.Action("Delete", new { id = product.ProductId })" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination pagination-sm justify-content-center mt-4">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new {
+                            page = i,
+                            sort = Model.SortColumn,
+                            sortDir = Model.SortDirection,
+                            categoryId = Model.CategoryFilter
+                        })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>
- *@

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using StoreManagmentMVC.Models;
-using StoreManagmentMVC.ViewModels;
+using StoreManagmentMVC.ViewModels.DashboardMVs;
 using System.Diagnostics;
 
 namespace StoreManagmentMVC.Controllers
@@ -18,29 +19,37 @@ namespace StoreManagmentMVC.Controllers
             _context = context;
         }
 
-        public IActionResult Index(DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
             startDate ??= DateTime.Now.AddMonths(-1);
             endDate ??= DateTime.Now;
 
-            var salesData = _context.Set<Sale>()
-                .FromSqlRaw("EXEC sp_GetSalesReport @StartDate = {0}, @EndDate = {1}", startDate, endDate)
+            var salesData = _context.Set<SalesSummary>()
+                .FromSqlRaw("EXEC GetSalesSummaryByDate @StartDate = {0}, @EndDate = {1}", startDate, endDate)
                 .AsNoTracking()
                 .ToList();
 
-            var topProducts = _context.TopProductVM
-                .FromSqlRaw("EXEC sp_GetTopProductsByQuantity @TopN = {0}, @StartDate = {1}, @EndDate = {2}, @CategoryId = {3}",
-                    5,
-                    new DateTime(2023, 04, 01),
-                    DateTime.Now,
-                    DBNull.Value
-                )
-                .ToList();
+            var param = new SqlParameter("@Top", 5);
+
+            var topProducts = await _context.TopSellingProducts
+                .FromSqlRaw("SELECT * FROM fn_TopSellingProducts(@Top)", param)
+                .ToListAsync();
+
+            var stats = _context.EcommerceDashboardStats.FirstOrDefault();
+
             var model = new DashboardVM
             {
                 Sales = salesData,
-                TopProducts = topProducts
+                TopProducts = topProducts,
+                EarningsThisMonth = stats.EarningsThisMonth,
+                TotalProducts = stats.TotalProducts,
+                AverageOrderValue = stats.AverageOrderValue,
+                OrdersThisMonth = stats.OrdersThisMonth,
+                TotalCustomers = stats.TotalCustomers,
+                TotalOrders = stats.TotalOrders
             };
+
+
             return View(model);
         }
 

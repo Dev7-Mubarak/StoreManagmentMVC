@@ -29191,9 +29191,8 @@ svg {
         padding: 0.4375rem 0.75rem;
         border: 0;
         outline: 1px solid #dee2e6;
-        color: #c9c8c8;
         appearance: none;
-        background: url("../../images/arrow-down.svg");
+        background: url("~/assets/images/arrow-down.svg");
         background-repeat: no-repeat;
         background-position: 99% center;
     }
@@ -32042,6 +32041,7 @@ dl {
     padding: 0 2.187rem ;
     -webkit-flex-grow: 1;
     flex-grow: 1;
+    margin-top: 25px;
 }
 
 @media (max-width: 767px) {
@@ -32244,7 +32244,7 @@ dl {
 }
 
 .sidebar .nav:not(.sub-menu) {
-    margin-top: 0;
+    margin-top: 30px;
     margin-left: 0;
     margin-right: 0;
 }
